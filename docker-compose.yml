@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./dados:/app/dados
+    environment:
+      - GERENCIADOR_DATABASE_PATH=dados/tarefas.db
+      - GERENCIADOR_LOG_LEVEL=INFO

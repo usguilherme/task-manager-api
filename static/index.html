@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>gerenciador-tarefas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F3F4EF;
+    --surface: #FFFFFF;
+    --border: #DEE1D6;
+    --text: #20241F;
+    --text-muted: #5B6158;
+    --accent: #2F6F5E;
+    --accent-soft: #E4EFEC;
+    --alta: #B5533C;
+    --alta-soft: #F5E7E2;
+    --normal: #4A5568;
+    --normal-soft: #E9EBEF;
+    --baixa: #7C8A72;
+    --baixa-soft: #EBEEE7;
+    --danger: #B5533C;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(32,36,31,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 64px;
+  }
+
+  .window {
+    width: 100%;
+    max-width: 760px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 12px 32px rgba(32,36,31,0.06);
+    overflow: hidden;
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #EAEBE5;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.red { background: #E0645A; }
+  .dot.yellow { background: #E3B341; }
+  .dot.green { background: #61B579; }
+
+  .titlebar-label {
+    margin-left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .status {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(47,111,94,0.5);
+    animation: pulse 2s infinite;
+  }
+  .status-dot.offline { background: var(--danger); animation: none; }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(47,111,94,0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(47,111,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(47,111,94,0); }
+  }
+
+  .body { padding: 22px 22px 8px; }
+
+  .prompt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .prompt-label span { color: var(--text-muted); }
+
+  form.add-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .add-row {
+    display: flex;
+    gap: 8px;
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+  }
+
+  input, select {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #FBFBF9;
+    color: var(--text);
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--accent); background: #fff; }
+
+  input[name="titulo"] { flex: 2; min-width: 160px; }
+  input[name="data_vencimento"] { flex: 1; min-width: 140px; }
+  select { flex: 1; min-width: 100px; }
+
+  button {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: transform 0.05s ease, opacity 0.15s ease;
+  }
+  button:active { transform: scale(0.97); }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-ghost.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-danger { background: transparent; color: var(--danger); padding: 4px 8px; font-size: 15px; }
+  .btn-danger:hover { background: var(--alta-soft); border-radius: 6px; }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 14px 0 4px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .toolbar input[name="busca"] {
+    flex: 1;
+    min-width: 140px;
+  }
+  .toolbar input[name="busca"]::before { content: "grep"; }
+
+  .flags { display: flex; gap: 6px; }
+  .flags button { padding: 7px 12px; font-size: 12px; }
+
+  .list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--border);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 2px;
+    border-bottom: 1px solid var(--border);
+    animation: fadein 0.25s ease;
+  }
+  @keyframes fadein { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+
+  .checkbox {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    width: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--accent);
+    padding: 0;
+  }
+
+  .row-title {
+    flex: 1;
+    font-size: 14.5px;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  .row.done .row-title { color: var(--text-muted); text-decoration: line-through; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .tag.alta { background: var(--alta-soft); color: var(--alta); }
+  .tag.normal { background: var(--normal-soft); color: var(--normal); }
+  .tag.baixa { background: var(--baixa-soft); color: var(--baixa); }
+
+  .due {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .empty {
+    padding: 32px 8px;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .statsbar {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 16px 22px;
+    background: #FAFAF7;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .statsbar b { color: var(--text); font-size: 13px; }
+
+  .pager {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .pager button { padding: 4px 9px; font-size: 11px; }
+  .pager button:disabled { opacity: 0.35; cursor: default; }
+
+  .error-banner {
+    margin: 0 22px 14px;
+    padding: 10px 12px;
+    background: var(--alta-soft);
+    color: var(--alta);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    display: none;
+  }
+  .error-banner.show { display: block; }
+
+  @media (max-width: 480px) {
+    .row { flex-wrap: wrap; }
+    .due { order: 3; width: 100%; padding-left: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <span class="titlebar-label">gerenciador-tarefas — v2</span>
+    <span class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">conectando…</span></span>
+  </div>
+
+  <div class="body">
+    <div class="prompt-label">$ tarefas add <span>--titulo "..." --prioridade Normal</span></div>
+    <form class="add-form" id="addForm">
+      <div class="add-row">
+        <input type="text" name="titulo" placeholder="título da tarefa" required />
+        <select name="prioridade">
+          <option value="Baixa">Baixa</option>
+          <option value="Normal" selected>Normal</option>
+          <option value="Alta">Alta</option>
+        </select>
+        <input type="date" name="data_vencimento" />
+        <button type="submit" class="btn-primary">adicionar</button>
+      </div>
+    </form>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="toolbar">
+      <input type="text" name="busca" id="buscaInput" placeholder="grep título ou descrição…" />
+      <div class="flags" id="filtros">
+        <button data-filtro="todas" class="btn-ghost active">--todas</button>
+        <button data-filtro="pendentes" class="btn-ghost">--pendentes</button>
+        <button data-filtro="concluidas" class="btn-ghost">--concluidas</button>
+      </div>
+    </div>
+
+    <div class="list" id="lista"></div>
+  </div>
+
+  <div class="statsbar" id="statsbar">
+    <span>total <b id="statTotal">0</b></span>
+    <span>concluídas <b id="statConcluidas">0</b></span>
+    <span>pendentes <b id="statPendentes">0</b></span>
+    <span>taxa <b id="statTaxa">0%</b></span>
+    <div class="pager">
+      <button id="pagAnterior" class="btn-ghost">‹</button>
+      <span id="pagLabel">1</span>
+      <button id="pagProxima" class="btn-ghost">›</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "";
+const TAMANHO_PAGINA = 8;
+
+let estado = { filtro: "todas", busca: "", pagina: 1 };
+
+const el = (id) => document.getElementById(id);
+const errorBanner = el("errorBanner");
+
+function mostrarErro(msg) {
+  errorBanner.textContent = msg;
+  errorBanner.classList.add("show");
+}
+function esconderErro() {
+  errorBanner.classList.remove("show");
+}
+
+async function chamarApi(caminho, opcoes = {}) {
+  try {
+    const resposta = await fetch(API + caminho, {
+      headers: { "Content-Type": "application/json" },
+      ...opcoes,
+    });
+    el("statusDot").classList.remove("offline");
+    el("statusText").textContent = "online";
+    if (!resposta.ok) {
+      const corpo = await resposta.json().catch(() => ({}));
+      throw new Error(corpo.detail || `erro ${resposta.status}`);
+    }
+    esconderErro();
+    if (resposta.status === 204) return null;
+    return await resposta.json();
+  } catch (e) {
+    el("statusDot").classList.add("offline");
+    el("statusText").textContent = "offline";
+    mostrarErro("$ " + (e.message || "não foi possível conectar à API"));
+    throw e;
+  }
+}
+
+function tagPrioridade(p) {
+  const classe = { Alta: "alta", Normal: "normal", Baixa: "baixa" }[p] || "normal";
+  return `<span class="tag ${classe}">${p.toUpperCase()}</span>`;
+}
+
+async function carregarTarefas() {
+  const params = new URLSearchParams({
+    filtro: estado.filtro,
+    pagina: estado.pagina,
+    tamanho_pagina: TAMANHO_PAGINA,
+  });
+  if (estado.busca) params.set("busca", estado.busca);
+
+  let dados;
+  try {
+    dados = await chamarApi(`/tarefas?${params.toString()}`);
+  } catch {
+    return;
+  }
+
+  const lista = el("lista");
+  lista.innerHTML = "";
+
+  if (dados.itens.length === 0) {
+    lista.innerHTML = `<div class="empty">$ nenhuma tarefa encontrada --filtro=${estado.filtro}</div>`;
+  }
+
+  for (const t of dados.itens) {
+    const row = document.createElement("div");
+    row.className = "row" + (t.concluida ? " done" : "");
+    row.innerHTML = `
+      <button class="checkbox" data-id="${t.id}" data-acao="toggle">${t.concluida ? "[x]" : "[ ]"}</button>
+      <span class="row-title">${escaparHtml(t.titulo)}</span>
+      ${tagPrioridade(t.prioridade)}
+      <span class="due">${t.data_vencimento || "—"}</span>
+      <button class="btn-danger" data-id="${t.id}" data-acao="deletar">✕</button>
+    `;
+    lista.appendChild(row);
+  }
+
+  const totalPaginas = Math.max(1, Math.ceil(dados.total / TAMANHO_PAGINA));
+  el("pagLabel").textContent = `${estado.pagina}/${totalPaginas}`;
+  el("pagAnterior").disabled = estado.pagina <= 1;
+  el("pagProxima").disabled = estado.pagina >= totalPaginas;
+
+  await carregarEstatisticas();
+}
+
+function escaparHtml(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto;
+  return div.innerHTML;
+}
+
+async function carregarEstatisticas() {
+  try {
+    const resumo = await chamarApi("/tarefas/resumo/estatisticas");
+    el("statTotal").textContent = resumo.total;
+    el("statConcluidas").textContent = resumo.concluidas;
+    el("statPendentes").textContent = resumo.pendentes;
+    el("statTaxa").textContent = resumo.taxa_conclusao + "%";
+  } catch {
+    /* erro já exibido pelo chamarApi */
+  }
+}
+
+el("addForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const corpo = {
+    titulo: form.get("titulo").trim(),
+    prioridade: form.get("prioridade"),
+    data_vencimento: form.get("data_vencimento") || null,
+  };
+  if (!corpo.titulo) return;
+
+  try {
+    await chamarApi("/tarefas", { method: "POST", body: JSON.stringify(corpo) });
+    e.target.reset();
+    estado.pagina = 1;
+    await carregarTarefas();
+  } catch {
+    /* erro já exibido */
+  }
+});
+
+el("lista").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-acao]");
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const acao = btn.dataset.acao;
+
+  try {
+    if (acao === "toggle") {
+      const concluido = btn.textContent.trim() === "[x]";
+      await chamarApi(`/tarefas/${id}/${concluido ? "reabrir" : "concluir"}`, { method: "POST" });
+    } else if (acao === "deletar") {
+      await chamarApi(`/tarefas/${id}`, { method: "DELETE" });
+    }
+    await carregarTarefas();
+  } catch {
+    /* erro já exibido */
+  }
+});
+
+el("filtros").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-filtro]");
+  if (!btn) return;
+  document.querySelectorAll("#filtros button").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  estado.filtro = btn.dataset.filtro;
+  estado.pagina = 1;
+  carregarTarefas();
+});
+
+let debounceBusca;
+el("buscaInput").addEventListener("input", (e) => {
+  clearTimeout(debounceBusca);
+  debounceBusca = setTimeout(() => {
+    estado.busca = e.target.value.trim();
+    estado.pagina = 1;
+    carregarTarefas();
+  }, 300);
+});
+
+el("pagAnterior").addEventListener("click", () => {
+  if (estado.pagina > 1) { estado.pagina--; carregarTarefas(); }
+});
+el("pagProxima").addEventListener("click", () => {
+  estado.pagina++; carregarTarefas();
+});
+
+carregarTarefas();
+</script>
+</body>
+</html>
