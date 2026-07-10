@@ -1,8 +1,4 @@
 """Exceções de domínio do gerenciador de tarefas.
-
-Antes o projeto sinalizava erro com print, o que impede
-o chamador (CLI, API, testes) de reagir programaticamente ao erro.
-Com exceções, cada camada decide como tratar o problema.
 """
 
 
