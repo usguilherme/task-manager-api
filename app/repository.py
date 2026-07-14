@@ -1,11 +1,5 @@
-"""Repositório de tarefas.
-
-Padrao Repository: nenhuma outra camada do sistema escreve SQL.
-Isso significa que, no futuro, trocar SQLite por PostgreSQL é
-uma mudança isolada neste arquivo — o resto do código nem percebe.
-"""
+#Repositório de tarefas.
 from __future__ import annotations
-
 from .database import Database
 from .exceptions import TarefaNotFoundError
 from .logging_config import get_logger

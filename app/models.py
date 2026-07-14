@@ -1,12 +1,4 @@
-"""Modelo de domínio: Tarefa.
-
-Diferenças em relação a versão original:
-- `Prioridade` virou Enum: impossível criar uma tarefa com prioridade
-  "Urgente" por engano, o Python recusa na hora.
-- Validação de título vazio e de formato de data acontece em __post_init__,
-  então um objeto Tarefa inválido nunca chega a existir.
-- Type hints em tudo, pra IDE e o leitor saberem o que esperar.
-"""
+#Modelo de domínio: Tarefa.
 from __future__ import annotations
 
 from dataclasses import dataclass, field

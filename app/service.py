@@ -1,11 +1,4 @@
-"""Camada de serviço: regras de negócio puras.
-
-Esta classe não sabe se está sendo chamada por um menu de terminal
-ou por uma rota HTTP — e essa é a ideia. O mesmo `GerenciadorTarefas`
-alimenta tanto a CLI quanto a API REST, sem duplicar lógica.
-"""
 from __future__ import annotations
-
 from .exceptions import TarefaNotFoundError
 from .models import Prioridade, Tarefa
 from .repository import TarefaRepository

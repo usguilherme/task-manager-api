@@ -1,5 +1,4 @@
 import pytest
-
 from app.exceptions import TarefaNotFoundError
 from app.models import Tarefa
 

@@ -1,10 +1,3 @@
-"""Configuração de logging da aplicação.
-
-Substitui os `print()` espalhados pelo código original por logs de
-verdade — com nível, timestamp e origem —, que podem ser filtrados,
-redirecionados para um arquivo ou coletados por uma ferramenta de
-observabilidade em produção.
-"""
 from __future__ import annotations
 
 import logging

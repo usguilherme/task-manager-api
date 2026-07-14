@@ -1,13 +1,4 @@
-"""Camada de infraestrutura do banco de dados.
-
-O codigo original abria e fechava conexão manualmente em toda função:
-se uma exceção acontecesse no meio, a conexão vazava e a alteração
-podia ficar sem commit nem rollback. Aqui, `Database.conexao()` é um
-context manager: garante commit em caso de sucesso, rollback em caso
-de erro, e fechamento da conexão sempre — não importa o que aconteça.
-"""
 from __future__ import annotations
-
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager

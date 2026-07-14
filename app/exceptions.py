@@ -1,9 +1,5 @@
-"""Exceções de domínio do gerenciador de tarefas.
-"""
-
-
 class TarefaNotFoundError(Exception):
-    """Levantada quando uma tarefa não é encontrada pelo ID."""
+    #Levantada quando uma tarefa não é encontrada pelo ID
 
     def __init__(self, tarefa_id: int):
         self.tarefa_id = tarefa_id

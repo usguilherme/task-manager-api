@@ -1,18 +1,11 @@
-"""API REST do gerenciador de tarefas.
+#API REST do gerenciador de tarefas.
 
-Usa `create_app()` como factory (em vez de um único `app` global) para
-que os testes possam instanciar a aplicação apontando para um banco
-de dados temporário, sem interferir no banco real.
-"""
 from __future__ import annotations
-
 from pathlib import Path
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-
 from .config import settings
 from .database import Database
 from .exceptions import TarefaNotFoundError

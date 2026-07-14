@@ -1,5 +1,4 @@
 import pytest
-
 from app.database import Database
 from app.repository import TarefaRepository
 from app.service import GerenciadorTarefas

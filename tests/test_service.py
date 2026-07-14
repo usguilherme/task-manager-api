@@ -1,7 +1,5 @@
 import pytest
-
 from app.exceptions import TarefaNotFoundError
-
 
 def test_adicionar_tarefa(gerenciador):
     tarefa = gerenciador.adicionar_tarefa("Estudar", prioridade="Alta")
