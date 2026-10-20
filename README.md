@@ -24,11 +24,11 @@ O frontend é servido pela própria API em `http://localhost:8000/`. O
 visual remete de propósito a um terminal, já que o projeto nasceu como
 uma aplicação de linha de comando.
 
-![Interface web](docs/interface.png)
+![Interface web](docs/pythontask1.jpg)
 
 A documentação interativa (Swagger) fica em `http://localhost:8000/docs`.
 
-![Documentação Swagger](docs/swagger.png)
+![Documentação Swagger](docs/pythontask2.jpg)
 
 ```bash
 make run
@@ -205,4 +205,3 @@ O CI roda lint + testes em Python 3.11 e 3.12 a cada push/PR.
 - Autenticação (JWT) para múltiplos usuários
 - Migração para PostgreSQL em produção
 - Notificações de tarefas próximas ao vencimento
-
