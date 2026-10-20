@@ -206,6 +206,3 @@ O CI roda lint + testes em Python 3.11 e 3.12 a cada push/PR.
 - Migração para PostgreSQL em produção
 - Notificações de tarefas próximas ao vencimento
 
-## Licença
-
-MIT — veja [LICENSE](LICENSE).
