@@ -4,7 +4,7 @@ API REST, frontend web e CLI para gerenciamento de tarefas, construído em
 Python com **FastAPI**, **SQLite** e arquitetura em camadas (models →
 repository → service → API/CLI).
 
-![CI](https://github.com/usguilherme/gerenciador-de-tarefas/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/usguilherme/task-manager-api/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -23,6 +23,12 @@ duplicar código de negócio entre CLI, API e frontend.
 O frontend é servido pela própria API em `http://localhost:8000/`. O
 visual remete de propósito a um terminal, já que o projeto nasceu como
 uma aplicação de linha de comando.
+
+![Interface web](docs/interface.png)
+
+A documentação interativa (Swagger) fica em `http://localhost:8000/docs`.
+
+![Documentação Swagger](docs/swagger.png)
 
 ```bash
 make run
@@ -90,10 +96,15 @@ SQLite por PostgreSQL no futuro seria uma mudança isolada em um arquivo.
 ## Rodando localmente
 
 ```bash
-git clone https://github.com/usguilherme/gerenciador-de-tarefas.git
-cd gerenciador-de-tarefas
+git clone https://github.com/usguilherme/task-manager-api.git
+cd task-manager-api
 make install
 ```
+
+> **Windows sem `make`?** Rode os comandos diretamente:
+> `python -m pip install -r requirements.txt` (instalar),
+> `python -m uvicorn app.api:app --reload` (API + frontend),
+> `python cli.py` (CLI) e `python -m pytest tests/ -v` (testes).
 
 ### API + frontend
 
